@@ -1,17 +1,35 @@
 <template>
-  <div class="task-item">
+  <div class="task-item" :class="{ done: taskItem.completed }">
     <!--放到label中是因为自定义的复选框组件需要根据input的选中状态来判断该选区是选中还是不选中的-->
     <label>
+    <!--
+    子组件通过 @click="$emit('change-state', $event)" 触发一个自定义事件 change-state，并将事件对象 $event 传递给父组件。
+    父组件监听这个事件，并根据传来的数据更新其自身的状态。
+    -->
       <!--复选框-->
-      <input type="checkbox">
-      Todo 1
+      <input
+          type="checkbox"
+          :checked="taskItem.completed"
+          @click="$emit('change-state', $event)"
+      >
+      {{ taskItem.content }}
       <span class="check-button"></span>  <!--span自定义复选框按钮-->
     </label>
   </div>
 
 </template>
 <script setup>
-
+// 接收父组件传递的 taskItem 作为 prop
+// 接收父组件传递的 todoItem 作为 prop
+defineProps({
+  taskItem: {  // taskItem这里的名字必须跟对应的父组件一样，不然无法渲染
+    type: Object,
+    default: () => ({
+      completed: false,
+      content: ''
+    })
+  }
+});
 </script>
 <style scoped>
 .task-item {
@@ -25,6 +43,11 @@
   position: relative; /* 使 label 相对定位，允许其子元素使用绝对定位 */
   display: flex; /* 使用弹性盒布局，使子元素按行排列 */
   align-items: center; /* 垂直居中对齐子元素 */
+}
+
+.task-item.done label {
+  text-decoration: line-through;
+  font-style: italic;  /* 斜体 */
 }
 
 .task-item label span.check-button {

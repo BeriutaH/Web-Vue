@@ -1,14 +1,54 @@
 <template>
   <div class="input-add">
-    <input type="text" name="task">
-    <button>
+    <!-- v-model 同步用户输入的内容, @keyup.enter Vue 的事件监听指令，用于监听 keyup 事件，并在按下 Enter 键时触发 emitAddTask 方法。 -->
+    <input
+        type="text"
+        name="task"
+        v-model="taskContent"
+        @keyup.enter="emitAddTask"
+        placeholder="Enter task item..."
+    >
+    <button @click="emitAddTask">
       <!-- 用i来表示图标-->
       <i class="plus"></i>
     </button>
   </div>
 </template>
 <script setup>
+import { ref } from 'vue';
 
+// 使用 defineProps 接收父组件传入的 props
+const props = defineProps({
+  tid: {
+    type: Number,
+    required: true, // 确保传入 tid
+  }
+});
+
+// 定义 emits 以便触发父组件的事件
+const emit = defineEmits(['add-task']);
+
+// 定义响应式变量 taskContent 以绑定输入框
+const taskContent = ref("");
+
+// 定义添加任务的函数
+const emitAddTask = () => {
+  // 检查输入框内容是否为空
+  if (taskContent.value.trim()) {
+    // 创建任务对象
+    const task = {
+      id: props.tid,
+      content: taskContent.value,
+      completed: false  // 完成状态
+    };
+
+    // 触发自定义事件，传递任务对象给父组件
+    emit('add-task', task);
+
+    // 清空输入框
+    taskContent.value = '';
+  }
+};
 </script>
 
 <style scoped>

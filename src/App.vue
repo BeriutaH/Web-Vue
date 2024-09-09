@@ -1,24 +1,48 @@
 <template>
   <main>
     <div class="container">
-      <h1>欢迎使用xx待办事项！</h1>
-      <task-add />
-      <task-filter />
-      <task-list />
+<!--      <h1>欢迎使用xx待办事项！</h1>-->
+      <h1>Death Note</h1>
+      <!-- 它表示将 tasks.length 的值绑定到 task-add 组件的 tid 属性 -->
+      <task-add :tid="tasks.length" @add-task="addTask" />
+      <task-filter :selected="filter" @change-filter="filter = $event"/>
+      <task-list :tasks="filterRedTasks" />
     </div>
   </main>
 </template>
 
-<script>
+<script setup>
 import TaskAdd from "@/components/TaskAdd.vue";
 import TaskFilter from "@/components/TaskFilter.vue";
 import TaskList from "@/components/TaskList.vue";
-export default {
-  name: 'App',
-  components: { TaskAdd, TaskFilter, TaskList },
-}
-</script>
+import { ref, computed } from 'vue';
 
+// 定义响应式数据
+const tasks = ref([]);
+
+// 默认选中全部
+const filter = ref("all")  // 响应式引用，初始值为 "all"
+
+// 根据 filter 的值动态计算和返回过滤后的 tasks
+const filterRedTasks = computed(() => {
+  // computed 自动跟踪其依赖项（在这里是 filter.value 和 tasks.value），当这些依赖项发生变化时，计算属性会自动重新计算
+  switch (filter.value) {
+    // filter.value 是当前的过滤条件，它可以是 "all"、"done" 或 "task"
+    case 'done':
+      // 只返回那些 completed 属性为 true 的任务
+      return tasks.value.filter(task => task.completed);
+    case 'task':
+      // 只返回那些 completed 属性为 false 的任务
+      return tasks.value.filter(task => !task.completed);
+    default:
+      // 不对 tasks 进行任何过滤，直接返回所有任务
+      return tasks.value;
+  }
+});
+
+// 定义方法
+const addTask = (task) => tasks.value.push(task);
+</script>
 <style>
 /* 全局样式设置为一个盒子模型 */
 * {
@@ -50,12 +74,12 @@ main {
 
 /* 标题 */
 h1 {
+  display: grid; /* 将 main 元素设置为网格布局 */
+  align-items: center; /* 垂直居中对齐网格中的内容 */
+  justify-items: center; /* 水平居中对齐网格中的内容 */
   margin: 24px 0;
   font-size: 28px;
   color: #414873;
 }
-
-
-
 
 </style>
