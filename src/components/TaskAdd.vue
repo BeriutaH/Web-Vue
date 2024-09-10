@@ -24,20 +24,25 @@ const props = defineProps({
     required: true, // 确保传入 tid
   }
 });
+// 定义响应式变量 taskContent 以绑定输入框
+const taskContent = ref("");
 
 // 定义 emits 以便触发父组件的事件
 const emit = defineEmits(['add-task']);
 
-// 定义响应式变量 taskContent 以绑定输入框
-const taskContent = ref("");
-
 // 定义添加任务的函数
 const emitAddTask = () => {
+  handlerTaskAdd(props, emit, taskContent);
+};
+
+function handlerTaskAdd(tid, emit, taskContent) {
+
+
   // 检查输入框内容是否为空
   if (taskContent.value.trim()) {
     // 创建任务对象
     const task = {
-      id: props.tid,
+      id: tid,
       content: taskContent.value,
       completed: false  // 完成状态
     };
@@ -48,7 +53,7 @@ const emitAddTask = () => {
     // 清空输入框
     taskContent.value = '';
   }
-};
+}
 </script>
 
 <style scoped>
